@@ -2,10 +2,10 @@ package homework.app;
 
 import java.util.List;
 
-import demo7.vo.User;
 import homework.exception.SchoolException;
 import homework.service.SchoolService;
 import homework.vo.Course;
+import homework.vo.Request;
 import homework.vo.Student;
 import util.Keyboard;
 
@@ -16,7 +16,7 @@ public class SchoolApp {
 	public void menu() {
 		System.out.println("-------------------------------");
 		System.out.println("1.개설과정 조회 2.수강신청 3.수강신청 조회");
-		System.out.println("4.수강철회 5.학생가입 6.학생목록 조회");
+		System.out.println("4.수강철회 5.학생가입 6.학생정보 조회");
 		System.out.println("0.종료");
 		System.out.println("-------------------------------");
 		System.out.println();
@@ -53,14 +53,15 @@ public class SchoolApp {
 	
 	private void 학생가입() {
 		
+		System.out.print("가입할 학생 아이디: ");
 		String id = Keyboard.readString();
-		System.out.println("가입할 번호: " + id);
+		System.out.print("가입할 학생 이름: ");
 		String name = Keyboard.readString();
-		System.out.println("가입할 이름: " + name);
+		System.out.print("가입할 학생 학과: ");
 		String dept = Keyboard.readString();
-		System.out.println("가입할 학과: " + dept);
+		System.out.print("가입할 학생 학년: ");
 		int grade = Keyboard.readInt();
-		System.out.println("가입할 학년: " + grade);
+		
 		
 		Student student = new Student(id, name, dept, grade);
 		
@@ -68,22 +69,40 @@ public class SchoolApp {
 	}
 
 	private void 수강철회() {
-		// TODO Auto-generated method stub
+		System.out.println("### 수강 신청 철회");
+		System.out.print("조회할 수강 신청 번호: ");
+		int requestNo = Keyboard.readInt();
 		
+		schoolService.requestWithdrawal(requestNo);
+		System.out.println("### 수강 철회가 완료되었습니다.");
 	}
 
 	private void 수강신청조회() {
-		// TODO Auto-generated method stub
+		System.out.println("### 수강신청 조회");
+		System.out.print("조회할 수강 신청 아이디: ");
+		String id = Keyboard.readString();
+		
+		List<Request> requests = schoolService.getRequestInfo(id);
+		System.out.println("------------------------------");
+		System.out.println("수강 신청 번호 아이디\t과정 이름\t수강 철회 여부");
+		for(Request req : requests) {
+			System.out.print(req.getRequestNo() + "\t");
+			System.out.print(req.getId() + "\t");
+			System.out.print(req.getCourseName() + "\t");
+			System.out.print(req.isWithdrawalStatus());
+		}
 		
 	}
 
 	private void 수강신청() {
+		System.out.println("### 수강신청");
 		System.out.print("아이디 입력: ");
 		String id = Keyboard.readString();
 		System.out.print("과정번호 입력: ");
 		int courseNo = Keyboard.readInt();
 		
 		schoolService.signUp(id, courseNo);
+		System.err.println("수강신청이 완료되었습니다.");
 	}
 
 	private void 개설과정조회() {
@@ -91,10 +110,11 @@ public class SchoolApp {
 		List<Course> allCourses = schoolService.findAllCrouses();
 		
 		System.out.println("------------------------------");
-		System.out.println("과정 번호\t과정 이름");
+		System.out.println("과정 번호\t과정 이름\t현재 신청 인원");
 		for(Course course : allCourses) {
 			System.out.print(course.getCourseNo() + "\t");
-			System.out.print(course.getCourseName());
+			System.out.print(course.getCourseName() + "\t");
+			System.out.println(course.getCurrentApplicantNumber());
 			System.out.println();
 		}
 		
@@ -106,13 +126,12 @@ public class SchoolApp {
 		System.out.print("아이디 입력: ");
 		String id = Keyboard.readString();
 
-		User user = schoolService.getUserInfo(id);
+		Student student = schoolService.getUserInfo(id);
 		System.out.println("------------------------------");
-		System.out.println("아이디: " + user.getId());
-		System.out.println("이름: " + user.getName());
-		System.out.println("이메일: " + user.getEmail());
-		System.out.println("전화번호: " + user.getTel());
-		System.out.println("포인트: " + user.getPoint());
+		System.out.println("아이디: " + student.getId());
+		System.out.println("이름: " + student.getName());
+		System.out.println("학과: " + student.getDept());
+		System.out.println("학년: " + student.getGrade());
 		System.out.println("------------------------------");
 	}
 
